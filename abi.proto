@@ -1,0 +1,102 @@
+syntax = "proto3";
+
+package abi;
+
+// the command request from client
+message CommandRequest {
+    oneof request_data {
+        Hget hget = 1;
+        Hgetall hgetall = 2;
+        Hmget hmget = 3;
+        Hset hset = 4;
+        Hmset hmset = 5;
+        Hdel hdel = 6;
+        Hmdel hmdel = 7;
+        Hexist hexist = 8;
+        Hmexist hmexist = 9;
+    }
+}
+
+// the response of server
+message CommandResponse {
+    // status code: use HTTP 2xx/4xx/5xx code
+    uint32 status = 1;
+    // if is not 2xx, the detail information of message
+    string message = 2;
+    // return the success values
+    repeated Value values = 3;
+    // return the success kv pairs
+    repeated Kvpair pairs = 4;
+}
+
+// get a key from table, and return value
+message Hget {
+    string table = 1;
+    string key = 2;
+}
+
+// get all Kvpair from table
+message Hgetall {
+    string table = 1;
+}
+
+// get a group keys from table, and return their values
+message Hmget {
+    string table = 1;
+    repeated string keys = 2;
+}
+
+// the return value
+message Value {
+    oneof value {
+        string string = 1;
+        bytes binary = 2;
+        int64 integer = 3;
+        double float = 4;
+        bool bool = 5;
+    }
+}
+
+// the return Kvpair
+message Kvpair {
+    string key = 1;
+    Value value = 2;
+}
+
+// save a Kvpair to the table
+// if exists, will not execute
+message Hset {
+    string table = 1;
+    Kvpair pair = 2;
+}
+
+// save a group Kvpairs to the table
+// if exists, will not execute
+message Hmset {
+    string table = 1;
+    repeated Kvpair pairs = 2;
+}
+
+// delete a key from the table, and return the value
+message Hdel {
+    string table = 1;
+    string key = 2;
+}
+
+// delete a group keys from the table, and return the values
+message Hmdel {
+    string table = 1;
+    repeated string keys = 2;
+}
+
+// Checks if the key exists
+message Hexist {
+    string table = 1;
+    string key = 2;
+}
+
+// Checks if a group keys exist
+message Hmexist {
+    string table = 1;
+    repeated string keys = 2;
+}
