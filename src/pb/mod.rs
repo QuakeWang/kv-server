@@ -1,7 +1,5 @@
 pub mod abi;
 
-use std::result;
-
 use abi::{ command_request::RequestData, * };
 use http::StatusCode;
 

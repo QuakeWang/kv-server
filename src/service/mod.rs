@@ -1,5 +1,10 @@
 use crate::{
-    command_request::RequestData, CommandRequest, CommandResponse, KvError, MemTable, Storage,
+    command_request::RequestData,
+    CommandRequest,
+    CommandResponse,
+    KvError,
+    MemTable,
+    Storage,
 };
 use std::sync::Arc;
 use tracing::debug;
@@ -41,7 +46,7 @@ impl<Store: Storage> Service<Store> {
         let res = dispatch(cmd, &self.inner.store);
         debug!("Executed reponse: {:?}", res);
         // TODO: send on_executed event
-         res
+        res
     }
 }
 
@@ -51,7 +56,7 @@ pub fn dispatch(cmd: CommandRequest, store: &impl Storage) -> CommandResponse {
         Some(RequestData::Hgetall(param)) => param.execute(store),
         Some(RequestData::Hset(param)) => param.execute(store),
         None => KvError::InvalidCommand("Request has no data".into()).into(),
-        _ => KvError::Internal("Not implemented".into()).into()
+        _ => KvError::Internal("Not implemented".into()).into(),
     }
 }
 
@@ -78,9 +83,8 @@ mod tests {
     }
 }
 
-
 #[cfg(test)]
-use crate::{Kvpair, Value};
+use crate::{ Kvpair, Value };
 
 // Return the success test
 #[cfg(test)]

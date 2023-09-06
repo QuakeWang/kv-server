@@ -52,11 +52,11 @@ mod test {
     #[test]
     fn hget_should_work() {
         let store = MemTable::new();
-        let cmd = CommandRequest::new_hset("score", "u1", 10.into());
+        let cmd = CommandRequest::new_hset("score", "u1", (10).into());
         dispatch(cmd, &store);
         let cmd = CommandRequest::new_hget("score", "u1");
         let res = dispatch(cmd, &store);
-        assert_res_ok(res, &[10.into()], &[]);
+        assert_res_ok(res, &[(10).into()], &[]);
     }
 
     #[test]
@@ -71,10 +71,10 @@ mod test {
     fn hgetall_should_work() {
         let store = MemTable::new();
         let cmds = vec![
-            CommandRequest::new_hset("socre", "u1", 10.into()),
-            CommandRequest::new_hset("socre", "u2", 8.into()),
-            CommandRequest::new_hset("socre", "u3", 11.into()),
-            CommandRequest::new_hset("socre", "u1", 9.into()),
+            CommandRequest::new_hset("score", "u1", (10).into()),
+            CommandRequest::new_hset("score", "u2", (8).into()),
+            CommandRequest::new_hset("score", "u3", (11).into()),
+            CommandRequest::new_hset("score", "u1", (9).into())
         ];
         for cmd in cmds {
             dispatch(cmd, &store);
@@ -83,9 +83,9 @@ mod test {
         let cmd = CommandRequest::new_hgetall("score");
         let res = dispatch(cmd, &store);
         let pairs = &[
-            Kvpair::new("u1", 9.into()),
-            Kvpair::new("u2", 8.into()),
-            Kvpair::new("u3", 11.into()),
+            Kvpair::new("u1", (9).into()),
+            Kvpair::new("u2", (8).into()),
+            Kvpair::new("u3", (11).into()),
         ];
         assert_res_ok(res, &[], pairs);
     }
