@@ -1,4 +1,4 @@
-use crate::{KvError, Kvpair, Storage, Value};
+use crate::{KvError, Kvpair, Storage, StorageIter, Value};
 use dashmap::{mapref::one::Ref, DashMap};
 
 /// Use DashMap to build MemTable, impl Storage trait
@@ -54,7 +54,17 @@ impl Storage for MemTable {
             .collect())
     }
 
-    fn get_iter(&self, _table: &str) -> Result<Box<dyn Iterator<Item = Kvpair>>, KvError> {
-        todo!()
+    fn get_iter(&self, _table: &str) -> Result<Box<dyn Iterator<Item=Kvpair>>, KvError> {
+        // Use clone() to get the snapshot of table
+        let table = self.get_or_create_table(_table).clone();
+        // let iter = table.into_iter().map(|data| data.into());
+        let iter = StorageIter::new(table.into_iter());
+        Ok(Box::new(iter))
+    }
+}
+
+impl From<(String, Value)> for Kvpair {
+    fn from(data: (String, Value)) -> Self {
+        Kvpair::new(data.0, data.1)
     }
 }

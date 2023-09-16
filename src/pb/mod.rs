@@ -97,7 +97,7 @@ impl From<Vec<Kvpair>> for CommandResponse {
     }
 }
 
-/// Tansform KvError to CommandResponse
+/// Transform KvError to CommandResponse
 impl From<KvError> for CommandResponse {
     fn from(e: KvError) -> Self {
         let mut result = Self {

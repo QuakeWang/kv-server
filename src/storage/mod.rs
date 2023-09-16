@@ -1,8 +1,9 @@
 mod memory;
+
 pub use memory::MemTable;
 use crate::{KvError, Kvpair, Value};
 
-/// This is abstrct of storage. 
+/// This is abstract of storage.
 pub trait Storage {
     /// Get a value of the key from HashTable
     fn get(&self, table: &str, key: &str) -> Result<Option<Value>, KvError>;
@@ -12,10 +13,33 @@ pub trait Storage {
     fn contains(&self, table: &str, key: &str) -> Result<bool, KvError>;
     /// Delete a key from HashTable
     fn del(&self, table: &str, key: &str) -> Result<Option<Value>, KvError>;
-    /// Return all kv pairs from HashTable (bad tarit)
+    /// Return all kv pairs from HashTable (bad trait)
     fn get_all(&self, table: &str) -> Result<Vec<Kvpair>, KvError>;
     /// Return kv pairs' Iterator of HashTable
-    fn get_iter(&self, table: &str) -> Result<Box<dyn Iterator<Item = Kvpair>>, KvError>;
+    fn get_iter(&self, table: &str) -> Result<Box<dyn Iterator<Item=Kvpair>>, KvError>;
+}
+
+/// Provide Storage iterator so that implements of traits only need to provide their iterator
+/// to the StorageIter, and then they make sure that the type passed out by next() implements Into.
+pub struct StorageIter<T> {
+    data: T,
+}
+
+impl<T> StorageIter<T> {
+    pub fn new(data: T) -> Self {
+        Self { data }
+    }
+}
+
+impl<T> Iterator for StorageIter<T>
+    where T: Iterator,
+          T::Item: Into<Kvpair>,
+{
+    type Item = Kvpair;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.data.next().map(|v| v.into())
+    }
 }
 
 #[cfg(test)]
@@ -25,7 +49,7 @@ mod tests {
     #[test]
     fn memtable_basic_interface_should_work() {
         let store = MemTable::new();
-        test_basi_interface(store);
+        test_basic_interface(store);
     }
 
     #[test]
@@ -34,13 +58,13 @@ mod tests {
         test_get_all(store);
     }
 
-    // #[test]
-    // fn memtable_iter_should_work() {
-    //     let store = MemTable::new();
-    //     test_get_iter(store);
-    // }
+    #[test]
+    fn memtable_iter_should_work() {
+        let store = MemTable::new();
+        test_get_iter(store);
+    }
 
-    fn test_basi_interface(store: impl Storage) {
+    fn test_basic_interface(store: impl Storage) {
         // The first set creates the table, inserts the key and returns None.
         let v = store.set("t1", "hello".into(), "world".into());
         assert!(v.unwrap().is_none());
@@ -79,7 +103,7 @@ mod tests {
             data,
             vec![
                 Kvpair::new("k1", "v1".into()),
-                Kvpair::new("k2", "v2".into())
+                Kvpair::new("k2", "v2".into()),
             ]
         )
     }
@@ -94,7 +118,7 @@ mod tests {
             data,
             vec![
                 Kvpair::new("k1", "v1".into()),
-                Kvpair::new("k2", "v2".into())
+                Kvpair::new("k2", "v2".into()),
             ]
         )
     }

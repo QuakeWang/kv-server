@@ -11,7 +11,7 @@ use tracing::debug;
 
 mod command_service;
 
-/// The abstract of handl
+/// The abstract of handle
 pub trait CommandService {
     /// Handle Command, return Response
     fn execute(self, store: &impl Storage) -> CommandResponse;
@@ -44,7 +44,7 @@ impl<Store: Storage> Service<Store> {
         debug!("Got request: {:?}", cmd);
         // TODO: send on_received event
         let res = dispatch(cmd, &self.inner.store);
-        debug!("Executed reponse: {:?}", res);
+        debug!("Executed response: {:?}", res);
         // TODO: send on_executed event
         res
     }

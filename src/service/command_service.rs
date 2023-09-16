@@ -90,7 +90,7 @@ mod test {
         assert_res_ok(res, &[], pairs);
     }
 
-    /// Get Reponse from Request, only support HGET/HGETALL/HSET now!!!
+    /// Get Response from Request, only support HGET/HGETALL/HSET now!!!
     fn dispatch(cmd: CommandRequest, store: &impl Storage) -> CommandResponse {
         match cmd.request_data.unwrap() {
             RequestData::Hget(v) => v.execute(store),
