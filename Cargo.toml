@@ -10,8 +10,10 @@ bytes = "1" # Libraries for efficient handling of network buffers
 dashmap = "4" # concurrent HashMap
 http = "0.2" #  HTTP status code
 prost = "0.9" # handle protobuf code
+sled = "0.34" # sled db
 thiserror = "1" # Error definition and handling
-tracing = "0.1" # handle log
+tracing = "0.1"
+log = "0.4.20" # handle log
 
 [dev-dependencies]
 anyhow = "1" # handle error
@@ -19,6 +21,7 @@ async-prost = "0.3" # Support for wrapping protobufs into TCP frames
 futures = "0.3" # provide Stream trait
 tokio = { version = "1", features = ["rt", "rt-multi-thread", "io-util", "macros", "net" ] } # Asynchronous Network Library
 tracing-subscriber = "0.3" # handle log
+tempfile = "3" # handle temporary files
 
 [build-dependencies]
 prost-build = "0.9" # complie protobuf

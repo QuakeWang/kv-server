@@ -141,7 +141,6 @@ mod tests {
 
     #[test]
     fn service_should_work() {
-        // let service = Service::new(MemTable::default());
         let service: Service = ServiceInner::new(MemTable::default()).into();
         let cloned = service.clone();
 

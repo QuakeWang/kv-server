@@ -1,5 +1,7 @@
 mod memory;
+mod sleddb;
 
+pub use sleddb::SledDb;
 pub use memory::MemTable;
 use crate::{KvError, Kvpair, Value};
 
@@ -8,7 +10,7 @@ pub trait Storage {
     /// Get a value of the key from HashTable
     fn get(&self, table: &str, key: &str) -> Result<Option<Value>, KvError>;
     /// Update a value of the key from HashTable, and return the old value
-    fn set(&self, table: &str, key: String, value: Value) -> Result<Option<Value>, KvError>;
+    fn set(&self, table: &str, key: impl Into<String>, value: impl Into<Value>) -> Result<Option<Value>, KvError>;
     /// Check if the key contains in the HashTable
     fn contains(&self, table: &str, key: &str) -> Result<bool, KvError>;
     /// Delete a key from HashTable
@@ -44,7 +46,30 @@ impl<T> Iterator for StorageIter<T>
 
 #[cfg(test)]
 mod tests {
+    use tempfile::{tempdir, tempfile};
     use super::*;
+
+
+    #[test]
+    fn sleddb_basic_interface_should_work() {
+        let dir = tempdir().unwrap();
+        let store = SledDb::new(dir);
+        test_basic_interface(store);
+    }
+
+    #[test]
+    fn sleddb_get_all_should_work() {
+        let dir = tempdir().unwrap();
+        let store = SledDb::new(dir);
+        test_get_all(store);
+    }
+
+    #[test]
+    fn sleddb_iter_should_work() {
+        let dir = tempdir().unwrap();
+        let store = SledDb::new(dir);
+        test_get_iter(store);
+    }
 
     #[test]
     fn memtable_basic_interface_should_work() {
@@ -66,10 +91,10 @@ mod tests {
 
     fn test_basic_interface(store: impl Storage) {
         // The first set creates the table, inserts the key and returns None.
-        let v = store.set("t1", "hello".into(), "world".into());
+        let v = store.set("t1", "hello", "world");
         assert!(v.unwrap().is_none());
         // Setting the same key again updates it and returns the previous value.
-        let v1 = store.set("t1", "hello".into(), "world1".into());
+        let v1 = store.set("t1", "hello", "world1");
         assert_eq!(v1, Ok(Some("world".into())));
 
         // get The key that exists gets the latest value
@@ -95,8 +120,8 @@ mod tests {
     }
 
     fn test_get_all(store: impl Storage) {
-        store.set("t2", "k1".into(), "v1".into()).unwrap();
-        store.set("t2", "k2".into(), "v2".into()).unwrap();
+        store.set("t2", "k1", "v1").unwrap();
+        store.set("t2", "k2", "v2").unwrap();
         let mut data = store.get_all("t2").unwrap();
         data.sort_by(|a, b| a.partial_cmp(b).unwrap());
         assert_eq!(
@@ -110,8 +135,8 @@ mod tests {
 
     #[allow(dead_code)]
     fn test_get_iter(store: impl Storage) {
-        store.set("t2", "k1".into(), "v1".into()).unwrap();
-        store.set("t2", "k2".into(), "v2".into()).unwrap();
+        store.set("t2", "k1", "v1").unwrap();
+        store.set("t2", "k2", "v2").unwrap();
         let mut data: Vec<_> = store.get_iter("t2").unwrap().collect();
         data.sort_by(|a, b| a.partial_cmp(b).unwrap());
         assert_eq!(
