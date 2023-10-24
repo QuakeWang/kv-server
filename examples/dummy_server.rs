@@ -15,7 +15,8 @@ async fn main() -> Result<()> {
         let (stream, addr) = listener.accept().await?;
         info!("Client {:?} connected", addr);
         tokio::spawn(async move {
-            let mut stream = AsyncProstStream::<_, CommandRequest, CommandResponse, _>::from(stream).for_async();
+            let mut stream =
+                AsyncProstStream::<_, CommandRequest, CommandResponse, _>::from(stream).for_async();
             while let Some(Ok(msg)) = stream.next().await {
                 info!("Got a new command: {:?}", msg);
                 // create a 404 response for client

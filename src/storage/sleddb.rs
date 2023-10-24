@@ -67,7 +67,7 @@ impl Storage for SledDb {
         Ok(result)
     }
 
-    fn get_iter(&self, table: &str) -> Result<Box<dyn Iterator<Item=Kvpair>>, KvError> {
+    fn get_iter(&self, table: &str) -> Result<Box<dyn Iterator<Item = Kvpair>>, KvError> {
         let prefix = SledDb::get_table_prefix(table);
         let iter = StorageIter::new(self.0.scan_prefix(prefix));
         Ok(Box::new(iter))

@@ -1,16 +1,21 @@
 mod memory;
 mod sleddb;
 
-pub use sleddb::SledDb;
-pub use memory::MemTable;
 use crate::{KvError, Kvpair, Value};
+pub use memory::MemTable;
+pub use sleddb::SledDb;
 
 /// This is abstract of storage.
 pub trait Storage {
     /// Get a value of the key from HashTable
     fn get(&self, table: &str, key: &str) -> Result<Option<Value>, KvError>;
     /// Update a value of the key from HashTable, and return the old value
-    fn set(&self, table: &str, key: impl Into<String>, value: impl Into<Value>) -> Result<Option<Value>, KvError>;
+    fn set(
+        &self,
+        table: &str,
+        key: impl Into<String>,
+        value: impl Into<Value>,
+    ) -> Result<Option<Value>, KvError>;
     /// Check if the key contains in the HashTable
     fn contains(&self, table: &str, key: &str) -> Result<bool, KvError>;
     /// Delete a key from HashTable
@@ -18,7 +23,7 @@ pub trait Storage {
     /// Return all kv pairs from HashTable (bad trait)
     fn get_all(&self, table: &str) -> Result<Vec<Kvpair>, KvError>;
     /// Return kv pairs' Iterator of HashTable
-    fn get_iter(&self, table: &str) -> Result<Box<dyn Iterator<Item=Kvpair>>, KvError>;
+    fn get_iter(&self, table: &str) -> Result<Box<dyn Iterator<Item = Kvpair>>, KvError>;
 }
 
 /// Provide Storage iterator so that implements of traits only need to provide their iterator
@@ -34,8 +39,9 @@ impl<T> StorageIter<T> {
 }
 
 impl<T> Iterator for StorageIter<T>
-    where T: Iterator,
-          T::Item: Into<Kvpair>,
+where
+    T: Iterator,
+    T::Item: Into<Kvpair>,
 {
     type Item = Kvpair;
 
@@ -46,9 +52,8 @@ impl<T> Iterator for StorageIter<T>
 
 #[cfg(test)]
 mod tests {
-    use tempfile::{tempdir, tempfile};
     use super::*;
-
+    use tempfile::{tempdir, tempfile};
 
     #[test]
     fn sleddb_basic_interface_should_work() {

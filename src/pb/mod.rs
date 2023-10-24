@@ -1,10 +1,9 @@
 pub mod abi;
 
-use bytes::Bytes;
 use abi::{command_request::RequestData, *};
+use bytes::Bytes;
 use http::StatusCode;
 use prost::Message;
-use log::debug;
 
 use crate::KvError;
 
@@ -12,31 +11,29 @@ impl CommandRequest {
     /// Create HSET command
     pub fn new_hset(table: impl Into<String>, key: impl Into<String>, value: Value) -> Self {
         Self {
-            request_data: Some(
-                RequestData::Hset(Hset {
-                    table: table.into(),
-                    pair: Some(Kvpair::new(key, value)),
-                })
-            ),
+            request_data: Some(RequestData::Hset(Hset {
+                table: table.into(),
+                pair: Some(Kvpair::new(key, value)),
+            })),
         }
     }
 
     /// Create HGET command
     pub fn new_hget(table: impl Into<String>, key: impl Into<String>) -> Self {
         Self {
-            request_data: Some(
-                RequestData::Hget(Hget {
-                    table: table.into(),
-                    key: key.into(),
-                })
-            ),
+            request_data: Some(RequestData::Hget(Hget {
+                table: table.into(),
+                key: key.into(),
+            })),
         }
     }
 
     /// Create HGETALL command
     pub fn new_hgetall(table: impl Into<String>) -> Self {
         Self {
-            request_data: Some(RequestData::Hgetall(Hgetall { table: table.into() })),
+            request_data: Some(RequestData::Hgetall(Hgetall {
+                table: table.into(),
+            })),
         }
     }
 }

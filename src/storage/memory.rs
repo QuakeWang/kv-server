@@ -31,7 +31,12 @@ impl Storage for MemTable {
         Ok(table.get(key).map(|v| v.value().clone()))
     }
 
-    fn set(&self, table: &str, key: impl Into<String>, value: impl Into<Value>) -> Result<Option<Value>, KvError> {
+    fn set(
+        &self,
+        table: &str,
+        key: impl Into<String>,
+        value: impl Into<Value>,
+    ) -> Result<Option<Value>, KvError> {
         let table = self.get_or_create_table(table);
         Ok(table.insert(key.into(), value.into()))
     }
@@ -54,7 +59,7 @@ impl Storage for MemTable {
             .collect())
     }
 
-    fn get_iter(&self, _table: &str) -> Result<Box<dyn Iterator<Item=Kvpair>>, KvError> {
+    fn get_iter(&self, _table: &str) -> Result<Box<dyn Iterator<Item = Kvpair>>, KvError> {
         // Use clone() to get the snapshot of table
         let table = self.get_or_create_table(_table).clone();
         // let iter = table.into_iter().map(|data| data.into());

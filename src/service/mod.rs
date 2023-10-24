@@ -1,10 +1,5 @@
 use crate::{
-    command_request::RequestData,
-    CommandRequest,
-    CommandResponse,
-    KvError,
-    MemTable,
-    Storage,
+    command_request::RequestData, CommandRequest, CommandResponse, KvError, MemTable, Storage,
 };
 use std::sync::Arc;
 use tracing::debug;
@@ -52,7 +47,9 @@ pub struct Service<Store = MemTable> {
 
 impl<Store> Clone for Service<Store> {
     fn clone(&self) -> Self {
-        Self { inner: Arc::clone(&self.inner) }
+        Self {
+            inner: Arc::clone(&self.inner),
+        }
     }
 }
 
@@ -132,8 +129,8 @@ pub fn dispatch(cmd: CommandRequest, store: &impl Storage) -> CommandResponse {
 
 #[cfg(test)]
 mod tests {
-    use std::thread;
     use http::StatusCode;
+    use std::thread;
     use tracing::info;
 
     use super::*;
@@ -143,7 +140,6 @@ mod tests {
     fn service_should_work() {
         let service: Service = ServiceInner::new(MemTable::default()).into();
         let cloned = service.clone();
-
 
         let handle = thread::spawn(move || {
             let res = cloned.execute(CommandRequest::new_hset("t1", "k1", "v1".into()));

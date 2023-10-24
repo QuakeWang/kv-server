@@ -3,12 +3,11 @@ use crate::*;
 impl CommandService for Hset {
     fn execute(self, store: &impl crate::Storage) -> crate::CommandResponse {
         match self.pair {
-            Some(v) =>
-                match store.set(&self.table, v.key, v.value.unwrap_or_default()) {
-                    Ok(Some(v)) => v.into(),
-                    Ok(None) => Value::default().into(),
-                    Err(e) => e.into(),
-                }
+            Some(v) => match store.set(&self.table, v.key, v.value.unwrap_or_default()) {
+                Ok(Some(v)) => v.into(),
+                Ok(None) => Value::default().into(),
+                Err(e) => e.into(),
+            },
             None => Value::default().into(),
         }
     }
@@ -74,7 +73,7 @@ mod test {
             CommandRequest::new_hset("score", "u1", (10).into()),
             CommandRequest::new_hset("score", "u2", (8).into()),
             CommandRequest::new_hset("score", "u3", (11).into()),
-            CommandRequest::new_hset("score", "u1", (9).into())
+            CommandRequest::new_hset("score", "u1", (9).into()),
         ];
         for cmd in cmds {
             dispatch(cmd, &store);
